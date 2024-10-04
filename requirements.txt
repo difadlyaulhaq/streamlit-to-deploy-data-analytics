@@ -1,4 +1,5 @@
-streamlit==1.23.0
-numpy<2
-pandas==2.1.0  # Adjust based on compatibility
-plotly==5.17.0
+streamlit==1.22.0
+pandas==1.5.3
+seaborn==0.12.2
+matplotlib==3.7.1
+numpy==1.24.0
