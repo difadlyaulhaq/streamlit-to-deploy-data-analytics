@@ -1,1 +1,124 @@
-{"nbformat":4,"nbformat_minor":0,"metadata":{"colab":{"provenance":[],"authorship_tag":"ABX9TyMW0hbCGujZ5brVCX+zDksH"},"kernelspec":{"name":"python3","display_name":"Python 3"},"language_info":{"name":"python"}},"cells":[{"cell_type":"markdown","source":["# Proyek Analisis Data: Bike sharing\n","- **Nama:** Difa Dlyaul Haq\n","- **Email:** difadlyaulhaq2@gmail.com\n","- **ID Dicoding:** Difa Dlyaul Haq"],"metadata":{"id":"V6GsBIWX5QOh"}},{"cell_type":"markdown","source":["#import library"],"metadata":{"id":"-Sqybni151zm"}},{"cell_type":"code","source":["!pip install streamlit\n","!pip install pyngrok"],"metadata":{"id":"E8tj7Za66Qha"},"execution_count":null,"outputs":[]},{"cell_type":"code","execution_count":null,"metadata":{"id":"pUgU7rFH44lI"},"outputs":[],"source":["import numpy as np\n","import pandas as pd\n","import matplotlib.pyplot as plt\n","import seaborn as sns\n","import streamlit as st\n","from pyngrok import ngrok"]},{"cell_type":"code","source":["!wget -q -O - ipv4.icanhazip.com"],"metadata":{"id":"yVEdU5fcermw"},"execution_count":null,"outputs":[]},{"cell_type":"code","source":["with open('bike_sharing_app.py', 'w') as f:\n","    f.write(\"\"\"\n","import streamlit as st\n","import pandas as pd\n","import seaborn as sns\n","import matplotlib.pyplot as plt\n","import numpy as np  # Ensure to import numpy\n","\n","# Load the dataset\n","df_day = pd.read_csv('/content/drive/MyDrive/submission/data/day.csv')\n","\n","# Preprocessing: clean the data\n","df_day['temp2'] = df_day['temp'] * 47 - 8\n","df_day['atemp2'] = df_day['atemp'] * 66 - 16\n","df_day['hum2'] = df_day['hum'] * 100\n","df_day['windspeed2'] = df_day['windspeed'] * 67\n","\n","season_map = {1: 'spring', 2: 'summer', 3: 'fall', 4: 'winter'}\n","df_day['season'] = df_day['season'].map(season_map)\n","mnth_string = {\n","    1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',\n","    7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'\n","}\n","df_day['mnth'] = df_day['mnth'].map(mnth_string)\n","\n","# Labeling temperature, humidity, and windspeed\n","temps2_bin = np.linspace(df_day[\"temp2\"].min(), df_day[\"temp2\"].max(), 4)\n","temps2_labels = [\"cold\", \"mild\", \"hot\"]\n","df_day[\"temp2_bin\"] = pd.cut(df_day[\"temp2\"], bins=temps2_bin, labels=temps2_labels)\n","\n","hum2_bin = np.linspace(df_day[\"hum2\"].min(), df_day[\"hum2\"].max(), 4)\n","hum2_labels = [\"low\", \"medium\", \"high\"]\n","df_day[\"hum2_binned\"] = pd.cut(df_day[\"hum2\"], bins=hum2_bin, labels=hum2_labels)\n","\n","windspeed2_bins = np.linspace(df_day[\"windspeed2\"].min(), df_day[\"windspeed2\"].max(), 4)\n","windspeed2_labels = [\"calm\", \"breezy\", \"windy\"]\n","df_day[\"windspeed2_binned\"] = pd.cut(df_day[\"windspeed2\"], bins=windspeed2_bins, labels=windspeed2_labels)\n","\n","# Sidebar for filtering\n","st.sidebar.header(\"Filter Data\")\n","season_selected = st.sidebar.multiselect(\n","    \"Select Seasons\",\n","    options=df_day['season'].unique(),\n","    default=df_day['season'].unique()\n",")\n","\n","# Filter data\n","df_filtered = df_day[df_day['season'].isin(season_selected)]\n","\n","# Title and Introduction\n","st.title('Bike Sharing Analysis')\n","st.markdown(\"This dashboard analyzes bike-sharing trends across different seasons and weather conditions.\")\n","\n","# Visualization 1: Bike rentals based on temperature\n","st.subheader(\"Bike Rentals Based on Temperature\")\n","fig1, ax1 = plt.subplots(figsize=(10, 6))\n","sns.barplot(data=df_filtered, x='temp2', y='cnt', ax=ax1)\n","ax1.set_title('Jumlah Penyewaan Sepeda Berdasarkan Suhu')\n","st.pyplot(fig1)\n","\n","# Visualization 2: Bike rentals by month\n","st.subheader(\"Bike Rentals by Month\")\n","fig2, ax2 = plt.subplots(figsize=(10, 6))\n","sns.lineplot(data=df_filtered, x='mnth', y='casual', marker='o', color='red', label='Casual', ax=ax2)\n","sns.lineplot(data=df_filtered, x='mnth', y='registered', marker='o', color='blue', label='Registered', ax=ax2)\n","ax2.set_title('Jumlah Penyewaan Sepeda Berdasarkan Bulan')\n","st.pyplot(fig2)\n","\n","# Visualization 3: Bike rentals by season\n","st.subheader(\"Bike Rentals by Season\")\n","fig3, ax3 = plt.subplots(figsize=(10, 6))\n","sns.barplot(data=df_filtered, x='season', y='cnt', ax=ax3)\n","ax3.set_title('Jumlah Penyewaan Sepeda Berdasarkan Musim')\n","st.pyplot(fig3)\n","\n","# Conclusion\n","st.markdown('''\n","**Conclusion:**\n","- The highest number of users is recorded in hot weather.\n","- Both user groups peak in the summer months, particularly in June and July.\n","''')?\n","    \"\"\")"],"metadata":{"id":"RiRQA8eyffgf"},"execution_count":null,"outputs":[]},{"cell_type":"code","source":["!streamlit run app.py & npx localtunnel --port 8501"],"metadata":{"colab":{"base_uri":"https://localhost:8080/"},"id":"2Y4_pf7ogIWp","outputId":"3006299a-68e5-4234-f330-7eb1c32081cb"},"execution_count":null,"outputs":[{"output_type":"stream","name":"stdout","text":["\n","Collecting usage statistics. To deactivate, set browser.gatherUsageStats to false.\n","\u001b[0m\n","\u001b[0m\n","\u001b[34m\u001b[1m  You can now view your Streamlit app in your browser.\u001b[0m\n","\u001b[0m\n","\u001b[34m  Local URL: \u001b[0m\u001b[1mhttp://localhost:8501\u001b[0m\n","\u001b[34m  Network URL: \u001b[0m\u001b[1mhttp://172.28.0.12:8501\u001b[0m\n","\u001b[34m  External URL: \u001b[0m\u001b[1mhttp://34.106.39.57:8501\u001b[0m\n","\u001b[0m\n","your url is: https://nice-lizards-doubt.loca.lt\n","2024-10-03 05:53:47.104 Uncaught app exception\n","Traceback (most recent call last):\n","  File \"/usr/local/lib/python3.10/dist-packages/streamlit/runtime/scriptrunner/exec_code.py\", line 88, in exec_func_with_error_handling\n","    result = func()\n","  File \"/usr/local/lib/python3.10/dist-packages/streamlit/runtime/scriptrunner/script_runner.py\", line 579, in code_to_exec\n","    exec(code, module.__dict__)\n","  File \"/content/app.py\", line 1, in <module>\n","    st.sidebar.title(\"Informasi:\")\n","NameError: name 'st' is not defined\n"]}]}]}
+# -*- coding: utf-8 -*-
+"""dashboard.py
+
+Automatically generated by Colab.
+
+Original file is located at
+    https://colab.research.google.com/drive/1KUxkzifWNF0oDv8nrNhEu2cJvKuBkv20
+
+# Proyek Analisis Data: Bike sharing
+- **Nama:** Difa Dlyaul Haq
+- **Email:** difadlyaulhaq2@gmail.com
+- **ID Dicoding:** Difa Dlyaul Haq
+
+#import library
+"""
+
+!pip install streamlit -q
+!pip install pyngrok
+
+from google.colab import drive
+drive.mount('/content/drive')
+
+# Commented out IPython magic to ensure Python compatibility.
+# %%writefile app.py
+# import streamlit as st
+# import pandas as pd
+# import seaborn as sns
+# import matplotlib.pyplot as plt
+# import numpy as np
+# 
+# # Load the dataset
+# df_day = pd.read_csv('/content/drive/MyDrive/submission/data/day.csv')
+# 
+# # Preprocessing: clean the data
+# df_day['temp2'] = df_day['temp'] * 47 - 8
+# df_day['atemp2'] = df_day['atemp'] * 66 - 16
+# df_day['hum2'] = df_day['hum'] * 100
+# df_day['windspeed2'] = df_day['windspeed'] * 67
+# 
+# season_map = {1: 'spring', 2: 'summer', 3: 'fall', 4: 'winter'}
+# df_day['season'] = df_day['season'].map(season_map)
+# mnth_string = {
+#     1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
+#     7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
+# }
+# df_day['mnth'] = df_day['mnth'].map(mnth_string)
+# 
+# # Labeling temperature, humidity, and windspeed
+# temps2_bin = np.linspace(df_day["temp2"].min(), df_day["temp2"].max(), 4)
+# temps2_labels = ["cold", "mild", "hot"]
+# df_day["temp2_bin"] = pd.cut(df_day["temp2"], bins=temps2_bin, labels=temps2_labels)
+# 
+# hum2_bin = np.linspace(df_day["hum2"].min(), df_day["hum2"].max(), 4)
+# hum2_labels = ["low", "medium", "high"]
+# df_day["hum2_binned"] = pd.cut(df_day["hum2"], bins=hum2_bin, labels=hum2_labels)
+# 
+# windspeed2_bins = np.linspace(df_day["windspeed2"].min(), df_day["windspeed2"].max(), 4)
+# windspeed2_labels = ["calm", "breezy", "windy"]
+# df_day["windspeed2_binned"] = pd.cut(df_day["windspeed2"], bins=windspeed2_bins, labels=windspeed2_labels)
+# 
+# # Sidebar for filtering
+# st.sidebar.header("Filter Data")
+# season_selected = st.sidebar.multiselect(
+#     "Select Seasons",
+#     options=df_day['season'].unique(),
+#     default=df_day['season'].unique()
+# )
+# 
+# # Filter data
+# df_filtered = df_day[df_day['season'].isin(season_selected)]
+# 
+# # Title and Introduction
+# st.title('Bike Sharing Analysis')
+# st.markdown("This dashboard analyzes bike-sharing trends across different seasons and weather conditions.")
+# 
+# # Visualization 1: Bike rentals based on temperature
+# st.subheader("Bike Rentals Based on Temperature")
+# fig1, ax1 = plt.subplots(figsize=(10, 6))
+# sns.barplot(data=df_filtered, x='temp2', y='cnt', ax=ax1)
+# ax1.set_title('Jumlah Penyewaan Sepeda Berdasarkan Suhu')
+# st.pyplot(fig1)
+# 
+# # Visualization 2: Bike rentals by month
+# st.subheader("Bike Rentals by Month")
+# fig2, ax2 = plt.subplots(figsize=(10, 6))
+# sns.lineplot(data=df_filtered, x='mnth', y='casual', marker='o', color='red', label='Casual', ax=ax2)
+# sns.lineplot(data=df_filtered, x='mnth', y='registered', marker='o', color='blue', label='Registered', ax=ax2)
+# ax2.set_title('Jumlah Penyewaan Sepeda Berdasarkan Bulan')
+# st.pyplot(fig2)
+# 
+# # Visualization 3: Bike rentals by season
+# st.subheader("Bike Rentals by Season")
+# fig3, ax3 = plt.subplots(figsize=(10, 6))
+# sns.barplot(data=df_filtered, x='season', y='cnt', ax=ax3)
+# ax3.set_title('Jumlah Penyewaan Sepeda Berdasarkan Musim')
+# st.pyplot(fig3)
+# 
+# # Conclusion
+# st.markdown('''
+# **Conclusion:**
+# - The highest number of users is recorded in hot weather.
+# - Both user groups peak in the summer months, particularly in June and July.
+# ''')
+#
+
+!wget -q -O - ipv4.icanhazip.com
+
+!streamlit run app.py & npx localtunnel --port 8501
+
+# Install pipreqs
+# !pip install pipreqs
+
+# %%writefile /content/my_project/req.py
+# import streamlit as st
+# import pandas as pd
+# import numpy as np
+
+# st.write("Hello Streamlit")
+# #
+# # Generate requirements.txt
+# !pipreqs /content/drive/MyDrive/submission
+
+# # Display the generated requirements.txt
+# !cat /content/drive/MyDrive/submission
