@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""dashboard.py
+"""app.py
 
 # Proyek Analisis Data: Bike Sharing
 - **Nama:** Difa Dlyaul Haq
@@ -15,36 +15,36 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 # Load the dataset
-df_day = pd.read_csv('data/day.csv')
+DATA_PATH = '/content/drive/MyDrive/submission/data/day.csv'
+df_day = pd.read_csv(DATA_PATH)
 
-# Preprocessing: clean the data
+# Preprocessing: clean and prepare the data
 df_day['temp2'] = df_day['temp'] * 47 - 8
 df_day['atemp2'] = df_day['atemp'] * 66 - 16
 df_day['hum2'] = df_day['hum'] * 100
 df_day['windspeed2'] = df_day['windspeed'] * 67
 
-# Map season and month
+# Map season and month for better readability
 season_map = {1: 'spring', 2: 'summer', 3: 'fall', 4: 'winter'}
 df_day['season'] = df_day['season'].map(season_map)
-
-mnth_string = {
+month_map = {
     1: 'Jan', 2: 'Feb', 3: 'Mar', 4: 'Apr', 5: 'May', 6: 'Jun',
     7: 'Jul', 8: 'Aug', 9: 'Sep', 10: 'Oct', 11: 'Nov', 12: 'Dec'
 }
-df_day['mnth'] = df_day['mnth'].map(mnth_string)
+df_day['mnth'] = df_day['mnth'].map(month_map)
 
 # Binning temperature, humidity, and windspeed
-temps2_bin = np.linspace(df_day["temp2"].min(), df_day["temp2"].max(), 4)
-temps2_labels = ["cold", "mild", "hot"]
-df_day["temp2_bin"] = pd.cut(df_day["temp2"], bins=temps2_bin, labels=temps2_labels)
+temps2_bins = np.linspace(df_day['temp2'].min(), df_day['temp2'].max(), 4)
+temps2_labels = ['cold', 'mild', 'hot']
+df_day['temp2_bin'] = pd.cut(df_day['temp2'], bins=temps2_bins, labels=temps2_labels)
 
-hum2_bin = np.linspace(df_day["hum2"].min(), df_day["hum2"].max(), 4)
-hum2_labels = ["low", "medium", "high"]
-df_day["hum2_binned"] = pd.cut(df_day["hum2"], bins=hum2_bin, labels=hum2_labels)
+hum2_bins = np.linspace(df_day['hum2'].min(), df_day['hum2'].max(), 4)
+hum2_labels = ['low', 'medium', 'high']
+df_day['hum2_binned'] = pd.cut(df_day['hum2'], bins=hum2_bins, labels=hum2_labels)
 
-windspeed2_bins = np.linspace(df_day["windspeed2"].min(), df_day["windspeed2"].max(), 4)
-windspeed2_labels = ["calm", "breezy", "windy"]
-df_day["windspeed2_binned"] = pd.cut(df_day["windspeed2"], bins=windspeed2_bins, labels=windspeed2_labels)
+windspeed2_bins = np.linspace(df_day['windspeed2'].min(), df_day['windspeed2'].max(), 4)
+windspeed2_labels = ['calm', 'breezy', 'windy']
+df_day['windspeed2_binned'] = pd.cut(df_day['windspeed2'], bins=windspeed2_bins, labels=windspeed2_labels)
 
 # Sidebar for filtering
 st.sidebar.header("Filter Data")
@@ -59,7 +59,7 @@ df_filtered = df_day[df_day['season'].isin(season_selected)]
 
 # Title and Introduction
 st.title('Bike Sharing Analysis')
-st.markdown("This dashboard analyzes bike-sharing trends across different seasons and weather conditions.")
+st.markdown("This application analyzes bike-sharing trends across different seasons and weather conditions.")
 
 # Visualization 1: Bike rentals based on temperature
 st.subheader("Bike Rentals Based on Temperature")
@@ -91,7 +91,8 @@ ax3.set_ylabel('Jumlah Penyewaan')
 st.pyplot(fig3)
 
 # Conclusion
-st.markdown('''**Conclusion:**
+st.markdown('''
+**Conclusion:**
 - The highest number of users is recorded in hot weather.
 - Both user groups peak in the summer months, particularly in June and July.
 ''')
