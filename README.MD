@@ -13,6 +13,6 @@ Proyek_Analisis_Data.ipynb
 6. Lastly, run the code cells
 dashboard_bike.py
 
-Download this project [https://github.com/airamts/bike-sharing-analysis.git]()
+Download this project [https://github.com/airamts/bike-sharing-analysis.git](here)
 Note that the CSV file functions as a data source, so please do not move it
 Launch VSCode, click the terminal, and type streamlit run dashboard_bike.py to launch the file
